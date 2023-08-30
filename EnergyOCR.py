@@ -33,7 +33,7 @@ reader = easyocr.Reader(['en'])
 # Open the video captures
 video_capture1 = cv2.VideoCapture(input_video_path1)
 video_capture2 = cv2.VideoCapture(input_video_path2)
-frameRate = video_capture1.get(5)
+frameRate = video_capture1.get(5) # get FPS of video
 
 # Create the CSV file if it doesn't exist
 if not os.path.exists(output_csv_path):
@@ -55,7 +55,7 @@ try:
             break
         
         # Only one frame for each second is taken
-        frameID = video_capture1.get(1)
+        frameID = video_capture1.get(1) # get current frame number
         if (frameID % floor(frameRate) != 0):
             continue
 
