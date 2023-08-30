@@ -6,7 +6,7 @@ import os
 from math import floor
 
 def format_text(text):
-    # Replace 'S' with '5' and 'O' with '0'
+    # Ensure text has 6 characters and consits of digits or decimal point
     formatted_text = ''.join(char for char in text if char.isdigit() or char == '.')
     formatted_text = formatted_text[:5]
     return formatted_text
@@ -55,6 +55,7 @@ try:
         if not ret1 or not ret2:
             break
         
+        # Only one frame for each second is taken
         frameID = video_capture1.get(1)
         if (frameID % floor(frameRate) != 0):
             continue
@@ -78,7 +79,6 @@ try:
             print("Time:",num_seconds,"Voltage:", value1,"Current:", value2)
             csv_writer.writerow([num_seconds, value1, value2])
 
-        # Wait for 1 second before processing the next frames
         num_seconds += 1
 
 finally:
