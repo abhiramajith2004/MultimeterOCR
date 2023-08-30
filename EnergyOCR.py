@@ -1,6 +1,5 @@
 import cv2
 import easyocr
-import time
 import csv
 import os
 from math import floor
