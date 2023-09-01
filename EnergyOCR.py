@@ -2,7 +2,7 @@ import cv2
 import easyocr
 import csv
 import os
-from math import floor
+from math import ceil
 
 def format_text_float(text):
     formatted_text = ''.join(char for char in text if char.isdigit() or char == '.')
@@ -53,7 +53,7 @@ reader = easyocr.Reader(['en'])
 # Open the video captures
 video_capture1 = cv2.VideoCapture(input_video_path1)
 video_capture2 = cv2.VideoCapture(input_video_path2)
-frameRate = video_capture1.get(5)
+frameRate = ceil(video_capture1.get(5))
     
 # Create the CSV file for writing (write mode)
 csv_file = open(output_csv_path, 'w', newline='')
@@ -70,7 +70,7 @@ try:
             break
         
         frameID = video_capture1.get(1)
-        if (frameID % floor(frameRate) != 0):
+        if (frameID % frameRate != 0):
             continue
 
         # Perform OCR on the frames
