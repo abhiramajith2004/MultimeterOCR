@@ -68,7 +68,7 @@ try:
 
         if not ret1 or not ret2:
             break
-        
+        # Get one frame for each second
         frameID = video_capture1.get(1)
         if (frameID % frameRate != 0):
             continue
@@ -94,7 +94,7 @@ try:
             print("Time:",num_seconds,"Voltage:", voltage,"Current:", current, "Power:",power)
             csv_writer.writerow([num_seconds, voltage, current, power])
 
-        # Wait for 1 second before processing the next frames
+        # Incrementing second count
         num_seconds += 1
 
 finally:
