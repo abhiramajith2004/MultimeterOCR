@@ -56,13 +56,14 @@ reader = easyocr.Reader(['en'])
 video_capture1 = cv2.VideoCapture(input_video_path1)
 video_capture2 = cv2.VideoCapture(input_video_path2)
 frameRate = ceil(video_capture1.get(5))
+print("Frame Rate:",frameRate)
     
 # Create the CSV file for writing (write mode)
 csv_file = open(output_csv_path, 'w', newline='')
 csv_writer = csv.writer(csv_file)
 csv_writer.writerow(['Timestamp', 'Voltage', 'Current', 'Power'])
 
-num_seconds = 0
+num_seconds = -1
 try:
     while video_capture1.isOpened() and video_capture2.isOpened():
         ret1, frame1 = video_capture1.read()
@@ -74,6 +75,7 @@ try:
         frameID = video_capture1.get(1)
         if (frameID % frameRate != 0):
             continue
+        num_seconds += 1
 
         # Perform OCR on the frames
         results1 = reader.readtext(frame1)
@@ -95,9 +97,9 @@ try:
             power = round(voltage*current, 4)
             print("Time:",num_seconds,"Voltage:", voltage,"Current:", current, "Power:",power)
             csv_writer.writerow([num_seconds, voltage, current, power])
-
-        # Incrementing second count
-        num_seconds += 1
+        else:
+            print("Time:",num_seconds,"Voltage: None, Current: None, Power: None")
+            csv_writer.writerow([num_seconds])
 
 finally:
     # Close the CSV file
