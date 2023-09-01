@@ -4,16 +4,36 @@ import csv
 import os
 from math import floor
 
-def format_text(text):
-    # Ensure text has 6 characters and consits of digits or decimal point
+def format_text_float(text):
     formatted_text = ''.join(char for char in text if char.isdigit() or char == '.')
-    formatted_text = formatted_text[:5]
-    return formatted_text
+    formatted_text = formatted_text[:6]
+    
+    return float(formatted_text)
+
+def format_text_voltage(text):
+    val = format_text_float(text)
+    
+    while val > 10:     # since Voltage < 10
+        val = val/10
+        
+    val = round(val, 3)
+    return val
+
+def format_text_current(text):
+    val = format_text_float(text)
+    
+    while val > 1:         # since Current < 1
+        val = val/10
+        
+    val = round(val, 4)
+    return val
 
 # Input filenames for videos and CSV file
 input_video_file1 = input("Enter the VOLTAGE input video filename: ")
-input_video_file2 = input("Enter the CURRENT input video filename: ")
-output_csv_file = input("Enter the output CSV filename: ")
+input_video_file2 = input("Enter the CURRENT input video filename: ") 
+output_csv_file = input_video_file1[:-5] + '.csv'
+input_video_file1 = input_video_file1 + '.mp4'
+input_video_file2 = input_video_file2 + '.mp4'
 
 # Use the current directory as the base directory
 base_directory = os.getcwd()
@@ -33,17 +53,12 @@ reader = easyocr.Reader(['en'])
 # Open the video captures
 video_capture1 = cv2.VideoCapture(input_video_path1)
 video_capture2 = cv2.VideoCapture(input_video_path2)
-frameRate = video_capture1.get(5) # get FPS of video
-
-# Create the CSV file if it doesn't exist
-if not os.path.exists(output_csv_path):
-    with open(output_csv_path, 'w', newline='') as csv_file:
-        csv_writer = csv.writer(csv_file)
-        csv_writer.writerow(['Timestamp', 'Voltage', 'Current'])
-
-# Open the CSV file for writing (append mode)
-csv_file = open(output_csv_path, 'a', newline='')
+frameRate = video_capture1.get(5)
+    
+# Create the CSV file for writing (write mode)
+csv_file = open(output_csv_path, 'w', newline='')
 csv_writer = csv.writer(csv_file)
+csv_writer.writerow(['Timestamp', 'Voltage', 'Current', 'Power'])
 
 num_seconds = 0
 try:
@@ -54,8 +69,7 @@ try:
         if not ret1 or not ret2:
             break
         
-        # Only one frame for each second is taken
-        frameID = video_capture1.get(1) # get current frame number
+        frameID = video_capture1.get(1)
         if (frameID % floor(frameRate) != 0):
             continue
 
@@ -63,21 +77,24 @@ try:
         results1 = reader.readtext(frame1)
         results2 = reader.readtext(frame2)
 
-        value1 = None
-        value2 = None
+        voltage = None
+        current = None
+        power = None
 
         # Find the number values with tens digit, ones digit, and 4 decimal places
         for (bbox, text, prob) in results1:
-            value1 = format_text(text)
+            voltage = format_text_voltage(text)
 
         for (bbox, text, prob) in results2:
-            value2 = format_text(text)
- 
+            current = format_text_current(text)
+            
         # Write to CSV if both values are found
-        if value1 is not None and value2 is not None:
-            print("Time:",num_seconds,"Voltage:", value1,"Current:", value2)
-            csv_writer.writerow([num_seconds, value1, value2])
+        if voltage is not None and current is not None:
+            power = round(voltage*current, 4)
+            print("Time:",num_seconds,"Voltage:", voltage,"Current:", current, "Power:",power)
+            csv_writer.writerow([num_seconds, voltage, current, power])
 
+        # Wait for 1 second before processing the next frames
         num_seconds += 1
 
 finally:
