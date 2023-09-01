@@ -2,6 +2,7 @@ import cv2
 import easyocr
 import csv
 import os
+import pandas as pd
 from math import ceil
 
 def format_text_float(text):
@@ -27,6 +28,7 @@ def format_text_current(text):
         
     val = round(val, 4)
     return val
+
 
 # Input filenames for videos and CSV file
 input_video_file1 = input("Enter the VOLTAGE input video filename: ")
@@ -56,13 +58,10 @@ reader = easyocr.Reader(['en'])
 video_capture1 = cv2.VideoCapture(input_video_path1)
 video_capture2 = cv2.VideoCapture(input_video_path2)
 frameRate = ceil(video_capture1.get(5))
-    
-# Create the CSV file for writing (write mode)
-csv_file = open(output_csv_path, 'w', newline='')
-csv_writer = csv.writer(csv_file)
-csv_writer.writerow(['Timestamp', 'Voltage', 'Current', 'Power'])
+print("Frame Rate:", frameRate)
 
-num_seconds = 0
+df = pd.DataFrame(columns = ['Timestamp', 'Voltage', 'Current', 'Power'])
+num_seconds = -1
 try:
     while video_capture1.isOpened() and video_capture2.isOpened():
         ret1, frame1 = video_capture1.read()
@@ -74,6 +73,7 @@ try:
         frameID = video_capture1.get(1)
         if (frameID % frameRate != 0):
             continue
+        num_seconds += 1
 
         # Perform OCR on the frames
         results1 = reader.readtext(frame1)
@@ -94,15 +94,16 @@ try:
         if voltage is not None and current is not None:
             power = round(voltage*current, 4)
             print("Time:",num_seconds,"Voltage:", voltage,"Current:", current, "Power:",power)
-            csv_writer.writerow([num_seconds, voltage, current, power])
-
-        # Incrementing second count
-        num_seconds += 1
+            df.loc[len(df)] = {'Timestamp':num_seconds, 'Voltage':voltage, 'Current':current, 'Power':power}
+        else:
+            print("Time:",num_seconds,"Voltage: None Current: None Power: None")
+            df.loc[len(df)] = {'Timestamp':num_seconds, 'Voltage':None, 'Current':None, 'Power':None}
 
 finally:
-    # Close the CSV file
-    csv_file.close()
-
+    # Fill in missing values
+    df.interpolate(method ='linear', limit_direction ='forward', limit = 2, inplace=True)
+    df.to_csv(output_csv_path)
+    
     # Release the video captures
     video_capture1.release()
     video_capture2.release()
