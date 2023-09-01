@@ -37,11 +37,13 @@ input_video_file2 = input_video_file2 + '.mp4'
 
 # Use the current directory as the base directory
 base_directory = os.getcwd()
+videos_directory = os.path.join(base_directory, "Videos")
+csv_directory = os.path.joint(base_directory, "Output_CSV")
 
 # Construct full paths for input videos and output CSV
-input_video_path1 = os.path.join(base_directory, input_video_file1)
-input_video_path2 = os.path.join(base_directory, input_video_file2)
-output_csv_path = os.path.join(base_directory, output_csv_file)
+input_video_path1 = os.path.join(videos_directory, input_video_file1)
+input_video_path2 = os.path.join(videos_directory, input_video_file2)
+output_csv_path = os.path.join(csv_directory, output_csv_file)
 
 print(input_video_path1)
 print(input_video_path2)
