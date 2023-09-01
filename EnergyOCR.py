@@ -22,7 +22,7 @@ def format_text_voltage(text):
 def format_text_current(text):
     val = format_text_float(text)
     
-    while val > 1:         # since Current < 1
+    while val > 2:         # since Current < 2
         val = val/10
         
     val = round(val, 4)
@@ -38,7 +38,7 @@ input_video_file2 = input_video_file2 + '.mp4'
 # Use the current directory as the base directory
 base_directory = os.getcwd()
 videos_directory = os.path.join(base_directory, "Videos")
-csv_directory = os.path.joint(base_directory, "Output_CSV")
+csv_directory = os.path.join(base_directory, "Output_CSV")
 
 # Construct full paths for input videos and output CSV
 input_video_path1 = os.path.join(videos_directory, input_video_file1)
