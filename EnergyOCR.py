@@ -103,6 +103,7 @@ try:
 
 finally:
     # Close the CSV file
+    print('Results saved at:', output_csv_path)
     csv_file.close()
 
     # Release the video captures
