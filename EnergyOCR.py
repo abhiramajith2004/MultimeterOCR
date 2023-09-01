@@ -98,7 +98,7 @@ try:
             print("Time:",num_seconds,"Voltage:", voltage,"Current:", current, "Power:",power)
             csv_writer.writerow([num_seconds, voltage, current, power])
         else:
-            print("Time:",num_seconds,"Voltage: None, Current: None, Power: None")
+            print("Time:",num_seconds,"Voltage: None Current: None Power: None")
             csv_writer.writerow([num_seconds])
 
 finally:
