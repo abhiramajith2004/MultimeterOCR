@@ -93,15 +93,12 @@ def extract_values_toCSV(input_video_name):
 
 # Main
 num_videos_found = 0
-num_videos_processed = 0
 for video_filename in os.listdir(VIDEO_DIRECTORY): 
     if video_filename.endswith(".mp4"):
         num_videos_found += 1
-        return_val = extract_values_toCSV(video_filename)
+        extract_values_toCSV(video_filename)
         
-        if (return_val == 0):
-            num_videos_processed += 1
-
+num_videos_processed = num_videos_found - len(already_processed_vids)
 print(f"Number of videos Found : {num_videos_found} Processed: {num_videos_processed}")
 if num_videos_found != num_videos_processed:
     print("List of videos already processed:", already_processed_vids)
