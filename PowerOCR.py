@@ -70,11 +70,11 @@ def extract_values_toCSV(input_video_name):
             results1 = reader.readtext(frame1)
             power = None
 
-            # Find the number values with tens digit, ones digit, and 4 decimal places
+            # Find the number value
             for (bbox, text, prob) in results1:
                 power = format_text_power(text)
 
-            # Write to CSV if both values are found
+            # Write to CSV if value is found
             if power is not None:
                 print("Time:",num_seconds,"Power:",power)
                 csv_writer.writerow([num_seconds, power])
